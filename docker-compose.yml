@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mysql: 
+    container_name: mysql
+    image: mysql
+    environment: 
+      MYSQL_DATABASE: "devops"
+      MYSQL_ROOT_PASSWORD: "root"
+    ports: 
+      - "3306:3306"
+    volumes: 
+      -mysql-data:/var/lib/mysql
+    networks:
+      - mysql_data
+    restart: always
+    healthcheck: 
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+  node:
+    build: 
+      context: .
+    container_name: docker_with_network
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: docker
+    depends_on:
+      - mysql
+    networks:
+      - twotier
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
