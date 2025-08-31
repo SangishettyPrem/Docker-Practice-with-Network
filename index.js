@@ -11,11 +11,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
     res.status(200).send("Welcome to Docker Project with Two Tier Node.js Application")
 })
 
-app.use('/health', (req, res) => {
+app.get('/health', (req, res) => {
     res.status(200).send("Serve is up and running");
 })
 
